@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Which Central Bank Bird Are You?</title>
+  <style>
+    :root {
+      --bg: #f7f3ee;
+      --card: #fffaf4;
+      --text: #1e1e1e;
+      --muted: #66615d;
+      --line: #ded4c9;
+      --accent: #b51414;
+      --accent2: #2d2d2d;
+      --soft: #f0e6dc;
+      --good: #2f6651;
+      --shadow: 0 18px 45px rgba(30, 25, 20, 0.12);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(181, 20, 20, 0.12), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(0, 0, 0, 0.08), transparent 24%),
+        var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    button, input { font: inherit; }
+
+    .wrap {
+      width: min(860px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 38px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      color: var(--muted);
+      font-size: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .card {
+      background: rgba(255, 250, 244, 0.92);
+      border: 1px solid rgba(222, 212, 201, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 30px 26px 24px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(181,20,20,0.10), transparent 38%),
+        rgba(255,255,255,0.30);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: clamp(34px, 8vw, 64px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: clamp(16px, 3.6vw, 19px);
+      line-height: 1.45;
+    }
+
+    .content { padding: 24px; }
+
+    .bird-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin: 20px 0 6px;
+    }
+
+    .bird-pill {
+      padding: 10px 8px;
+      border-radius: 15px;
+      background: var(--soft);
+      text-align: center;
+      font-size: 13px;
+      color: #3b3734;
+      border: 1px solid rgba(222, 212, 201, 0.9);
+    }
+
+    .start-actions, .nav-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 15px;
+      padding: 13px 16px;
+      background: var(--accent2);
+      color: white;
+      cursor: pointer;
+      font-weight: 750;
+      letter-spacing: -0.01em;
+      transition: transform 0.08s ease, opacity 0.18s ease, background 0.18s ease;
+    }
+
+    .btn:hover { opacity: 0.92; }
+    .btn:active { transform: scale(0.98); }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn.accent { background: var(--accent); }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .quiz-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .meter {
+      height: 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      overflow: hidden;
+      flex: 1;
+      border: 1px solid rgba(222, 212, 201, 0.9);
+    }
+
+    .meter > div {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.25s ease;
+    }
+
+    .question-title {
+      font-size: clamp(24px, 5vw, 34px);
+      line-height: 1.12;
+      letter-spacing: -0.035em;
+      margin-bottom: 16px;
+    }
+
+    .answers {
+      display: grid;
+      gap: 10px;
+    }
+
+    .answer {
+      width: 100%;
+      text-align: left;
+      padding: 15px 15px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.56);
+      cursor: pointer;
+      line-height: 1.36;
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.08s ease;
+    }
+
+    .answer:hover {
+      border-color: rgba(181, 20, 20, 0.45);
+      background: rgba(255,255,255,0.85);
+    }
+
+    .answer:active { transform: scale(0.995); }
+
+    .answer.selected {
+      border-color: var(--accent);
+      background: rgba(181, 20, 20, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(181, 20, 20, 0.28);
+    }
+
+    .answer .letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 25px;
+      height: 25px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--soft);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 13px;
+      vertical-align: 1px;
+    }
+
+    .small-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .result-hero {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .bird-icon {
+      width: 104px;
+      height: 104px;
+      border-radius: 30px;
+      background: var(--soft);
+      display: grid;
+      place-items: center;
+      font-size: 58px;
+      border: 1px solid var(--line);
+    }
+
+    .result-name {
+      margin-bottom: 4px;
+      font-size: clamp(34px, 8vw, 56px);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+
+    .result-tag {
+      color: var(--accent);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .result-section {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.50);
+      margin-top: 12px;
+    }
+
+    .result-section h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .result-section p { color: #35312f; line-height: 1.5; margin-bottom: 0; }
+
+    .scoreboard {
+      margin-top: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 86px 1fr 34px;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 12px;
+      background: var(--soft);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(222, 212, 201, 0.9);
+    }
+
+    .bar > div {
+      height: 100%;
+      width: 0%;
+      background: var(--accent2);
+      border-radius: inherit;
+    }
+
+    .hidden { display: none !important; }
+
+    .tie-box {
+      border: 1px solid rgba(181,20,20,0.32);
+      background: rgba(181,20,20,0.06);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .footer {
+      margin-top: 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 650px) {
+      .wrap { width: min(100% - 18px, 860px); padding-top: 10px; }
+      .hero { padding: 24px 18px 20px; }
+      .content { padding: 18px; }
+      .bird-strip { grid-template-columns: repeat(2, 1fr); }
+      .result-hero { grid-template-columns: 1fr; }
+      .bird-icon { width: 92px; height: 92px; border-radius: 26px; }
+      .topbar { align-items: flex-start; }
+      .chip { font-size: 12px; }
+      .score-row { grid-template-columns: 76px 1fr 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topbar">
+      <div class="chip">Central Bank Ornithology Unit</div>
+      <div class="chip">Offline · one-file quiz</div>
+    </div>
+
+    <section class="card" id="startScreen">
+      <div class="hero">
+        <h1>Which Central Bank Bird Are You?</h1>
+        <p class="subtitle">A serious, sarcastic quiz about monetary-policy preferences, institutional self-image, and whether your emergency acronym deserves to exist.</p>
+        <div class="bird-strip" aria-label="Bird categories">
+          <div class="bird-pill">🦅 Hawk</div>
+          <div class="bird-pill">🕊️ Dove</div>
+          <div class="bird-pill">🐦 Pigeon</div>
+          <div class="bird-pill">🦉 Eagle</div>
+          <div class="bird-pill">🦜 Parrot</div>
+          <div class="bird-pill">🐦‍⬛ Crow</div>
+        </div>
+      </div>
+      <div class="content">
+        <p>This is not a simple “mostly A” quiz. Your answers build six policy traits: Hawk, Dove, Pigeon, Eagle, Parrot, and Crow. The final classification uses combinations, thresholds, and a tie-breaker if your monetary soul refuses to be identified cleanly.</p>
+        <p class="small-note">Works offline after download. Best sent on WhatsApp as a document attachment.</p>
+        <div class="start-actions">
+          <button class="btn accent" id="startBtn">Start the quiz</button>
+          <button class="btn secondary" id="aboutBtn">Show the rules</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="rulesScreen">
+      <div class="hero">
+        <h1>How it works</h1>
+        <p class="subtitle">The quiz tracks six scores and also tracks how many different questions contributed to each bird. So yes, the spreadsheet has a personality.</p>
+      </div>
+      <div class="content">
+        <div class="result-section">
+          <h3>The six birds</h3>
+          <p><strong>Hawk</strong>: price stability and credibility. <strong>Dove</strong>: employment and output stabilization. <strong>Pigeon</strong>: prudence and data dependence. <strong>Eagle</strong>: structural change and long-run vision. <strong>Parrot</strong>: holistic policy context. <strong>Crow</strong>: crisis creativity and unconventional tools.</p>
+        </div>
+        <div class="result-section">
+          <h3>Classification logic</h3>
+          <p>Crow, Parrot, Eagle, and Pigeon are checked first using combinations of score rank and repeated answer patterns. Hawk and Dove are separated at the end by their relative balance, because apparently even birds need an identification strategy.</p>
+        </div>
+        <div class="start-actions">
+          <button class="btn accent" id="rulesStartBtn">Start the quiz</button>
+          <button class="btn secondary" id="backToStartBtn">Back</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="quizScreen">
+      <div class="hero">
+        <div class="quiz-head">
+          <div class="meter" aria-label="Quiz progress"><div id="progressBar"></div></div>
+          <div class="progress-text" id="progressText">Question 1/10</div>
+        </div>
+        <h2 class="question-title" id="questionText"></h2>
+      </div>
+      <div class="content">
+        <div class="answers" id="answers"></div>
+        <div class="nav-actions">
+          <button class="btn secondary" id="prevBtn">Back</button>
+          <button class="btn secondary" id="restartBtn">Restart</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="tieScreen">
+      <div class="hero">
+        <h1>One final tie-breaker</h1>
+        <p class="subtitle">Your Hawk and Dove scores are close. This is unfortunate for classification, but probably healthy for policymaking.</p>
+      </div>
+      <div class="content">
+        <div class="tie-box">
+          <strong>Choose the statement that feels more painful to disagree with.</strong>
+        </div>
+        <div class="answers">
+          <button class="answer" data-tie="H"><span class="letter">A</span>A central bank that loses inflation credibility loses everything.</button>
+          <button class="answer" data-tie="D"><span class="letter">B</span>A central bank that causes avoidable unemployment has failed too.</button>
+        </div>
+        <div class="nav-actions">
+          <button class="btn secondary" id="tieBackBtn">Back to last question</button>
+          <button class="btn secondary" id="tieRestartBtn">Restart</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="resultScreen">
+      <div class="hero">
+        <div class="result-hero">
+          <div class="bird-icon" id="resultIcon">🐦</div>
+          <div>
+            <h1 class="result-name" id="resultName"></h1>
+            <div class="result-tag" id="resultTag"></div>
+            <p class="subtitle" id="resultOneLine"></p>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="result-section">
+          <h3>Policy style</h3>
+          <p id="resultPolicy"></p>
+        </div>
+        <div class="result-section">
+          <h3>Strength</h3>
+          <p id="resultStrength"></p>
+        </div>
+        <div class="result-section">
+          <h3>Weakness</h3>
+          <p id="resultWeakness"></p>
+        </div>
+        <div class="scoreboard" id="scoreboard"></div>
+        <div class="nav-actions">
+          <button class="btn accent" id="againBtn">Play again</button>
+          <button class="btn secondary" id="copyBtn">Copy result text</button>
+        </div>
+        <p class="small-note" id="copyNote"></p>
+      </div>
+    </section>
+
+    <div class="footer">For entertainment, not actual monetary-policy delegation. Mercifully.</div>
+  </main>
+
+  <script>
+    const traits = ["H", "D", "P", "E", "R", "C"];
+    const traitNames = {
+      H: "Hawk",
+      D: "Dove",
+      P: "Pigeon",
+      E: "Eagle",
+      R: "Parrot",
+      C: "Crow"
+    };
+
+    const quiz = [
+      {
+        q: "Inflation is above target and rising. What do you do first?",
+        a: [
+          { letter: "A", text: "Raise rates decisively. Credibility is not a decorative accessory.", pts: { H: 3, P: 1 } },
+          { letter: "B", text: "Wait for more evidence on persistence, wage dynamics, and expectations.", pts: { P: 3 } },
+          { letter: "C", text: "Avoid overtightening until you know whether the shock is supply-driven.", pts: { D: 3, P: 1 } },
+          { letter: "D", text: "Ask whether the inflation process has structurally changed.", pts: { E: 3 } },
+          { letter: "E", text: "Ask which households and sectors are absorbing the shock.", pts: { R: 3 } },
+          { letter: "F", text: "Create a temporary liquidity tool while adjusting rates separately.", pts: { C: 3, P: 1 } }
+        ]
+      },
+      {
+        q: "Unemployment rises sharply, but inflation is still uncomfortable. Your instinct?",
+        a: [
+          { letter: "A", text: "Stay tight. Price stability comes first. The economy may file a complaint later.", pts: { H: 3 } },
+          { letter: "B", text: "Slow the tightening path but avoid a dramatic pivot.", pts: { P: 3, D: 1 } },
+          { letter: "C", text: "Cut or pause. A recession is not a credibility strategy.", pts: { D: 3 } },
+          { letter: "D", text: "Reassess whether the Phillips curve still describes the economy.", pts: { E: 3 } },
+          { letter: "E", text: "Examine the distributional impact of unemployment across groups.", pts: { R: 3, D: 1 } },
+          { letter: "F", text: "Use targeted credit or liquidity measures instead of relying only on rates.", pts: { C: 3, R: 1 } }
+        ]
+      },
+      {
+        q: "Your relationship with the Taylor Rule is closest to:",
+        a: [
+          { letter: "A", text: "A useful discipline. Possibly scripture.", pts: { H: 2, P: 1 } },
+          { letter: "B", text: "A benchmark, not a personality.", pts: { P: 3 } },
+          { letter: "C", text: "Too contractionary when slack is large.", pts: { D: 2 } },
+          { letter: "D", text: "Historically useful, but insufficient under structural change.", pts: { E: 3 } },
+          { letter: "E", text: "Too narrow unless embedded in social and financial context.", pts: { R: 3 } },
+          { letter: "F", text: "Adorable. Does it include emergency swap lines?", pts: { C: 3 } }
+        ]
+      },
+      {
+        q: "Markets panic after your policy announcement. You think:",
+        a: [
+          { letter: "A", text: "Good. They should understand we are serious.", pts: { H: 3 } },
+          { letter: "B", text: "The communication was probably too abrupt. Adjust the message.", pts: { P: 3 } },
+          { letter: "C", text: "We may be imposing excessive real-economy costs.", pts: { D: 3 } },
+          { letter: "D", text: "Market reaction reveals a deeper shift in expectations.", pts: { E: 2, P: 1 } },
+          { letter: "E", text: "Market stress will affect households, firms, and financial inequality differently.", pts: { R: 3 } },
+          { letter: "F", text: "Time for a facility with a name no normal person can pronounce.", pts: { C: 3 } }
+        ]
+      },
+      {
+        q: "The government is pressuring the central bank. Your reaction?",
+        a: [
+          { letter: "A", text: "Defend independence aggressively. The mandate is price stability.", pts: { H: 2, P: 1 } },
+          { letter: "B", text: "Preserve independence through cautious, rule-like behavior.", pts: { P: 3 } },
+          { letter: "C", text: "Remind everyone that recessions have political consequences too.", pts: { D: 2, R: 1 } },
+          { letter: "D", text: "Explain that independence must evolve with new macroeconomic realities.", pts: { E: 3 } },
+          { letter: "E", text: "Argue that central-bank legitimacy requires broader accountability.", pts: { R: 3 } },
+          { letter: "F", text: "Keep independence, but use every legal tool available in a crisis.", pts: { C: 3, P: 1 } }
+        ]
+      },
+      {
+        q: "A financial crisis starts over the weekend. What are you doing?",
+        a: [
+          { letter: "A", text: "Prevent moral hazard. Support must be limited and disciplined.", pts: { H: 2, P: 1 } },
+          { letter: "B", text: "Provide liquidity, but only after verifying the plumbing.", pts: { P: 3, C: 1 } },
+          { letter: "C", text: "Ease policy to prevent a collapse in employment and demand.", pts: { D: 3 } },
+          { letter: "D", text: "Identify whether this crisis signals a new financial regime.", pts: { E: 3 } },
+          { letter: "E", text: "Coordinate with supervisors, fiscal authorities, and social-policy institutions.", pts: { R: 3, C: 1 } },
+          { letter: "F", text: "Announce emergency facilities before breakfast. Legal can catch up emotionally.", pts: { C: 4 } }
+        ]
+      },
+      {
+        q: "What sentence would you most likely say in a speech?",
+        a: [
+          { letter: "A", text: "Inflation expectations must remain firmly anchored.", pts: { H: 3 } },
+          { letter: "B", text: "Future decisions will depend on incoming data.", pts: { P: 3 } },
+          { letter: "C", text: "We must avoid unnecessary damage to employment.", pts: { D: 3 } },
+          { letter: "D", text: "The global economy may be entering a new regime.", pts: { E: 3 } },
+          { letter: "E", text: "Monetary policy operates within a broader social context.", pts: { R: 3 } },
+          { letter: "F", text: "The toolkit must adapt to extraordinary circumstances.", pts: { C: 3 } }
+        ]
+      },
+      {
+        q: "The model forecast fails badly. What is your conclusion?",
+        a: [
+          { letter: "A", text: "The model failed, but inflation discipline remains necessary.", pts: { H: 2, P: 1 } },
+          { letter: "B", text: "Revise the model carefully and avoid sudden moves.", pts: { P: 3 } },
+          { letter: "C", text: "The model underestimated labor-market fragility.", pts: { D: 3 } },
+          { letter: "D", text: "The model belongs to the previous regime.", pts: { E: 4 } },
+          { letter: "E", text: "The model excluded too many relevant social and financial channels.", pts: { R: 3, E: 1 } },
+          { letter: "F", text: "The model did not include the new thing I invented, which is rude.", pts: { C: 3 } }
+        ]
+      },
+      {
+        q: "What is the greatest central-bank sin?",
+        a: [
+          { letter: "A", text: "Letting inflation expectations become unanchored.", pts: { H: 4 } },
+          { letter: "B", text: "Overreacting to noisy data.", pts: { P: 4 } },
+          { letter: "C", text: "Creating unemployment unnecessarily.", pts: { D: 4 } },
+          { letter: "D", text: "Missing a structural transformation.", pts: { E: 4 } },
+          { letter: "E", text: "Pretending monetary policy is distributionally neutral.", pts: { R: 4 } },
+          { letter: "F", text: "Being trapped by an obsolete toolkit during a crisis.", pts: { C: 4 } }
+        ]
+      },
+      {
+        q: "Extraordinary times require:",
+        a: [
+          { letter: "A", text: "Even stronger commitment to discipline.", pts: { H: 3 } },
+          { letter: "B", text: "Maximum caution and clear communication.", pts: { P: 3 } },
+          { letter: "C", text: "Protection of employment and demand.", pts: { D: 3 } },
+          { letter: "D", text: "A new framework for a changed world.", pts: { E: 3 } },
+          { letter: "E", text: "Coordination across policy domains.", pts: { R: 3 } },
+          { letter: "F", text: "Extraordinary measures, obviously. Try to keep up.", pts: { C: 3 } }
+        ]
+      }
+    ];
+
+    const profiles = {
+      H: {
+        icon: "🦅",
+        name: "Hawk",
+        tag: "The Credibility Guardian",
+        one: "You are the guardian of price stability. Expectations must remain anchored, preferably with industrial equipment.",
+        policy: "Pre-emptive tightening, strong anti-inflation communication, and institutional discipline. You would rather be accused of being harsh than unserious.",
+        strength: "Credibility. Markets understand that when you say price stability, you are not doing interpretive theatre.",
+        weakness: "You may discover the real economy only after stepping on it. Elegantly, of course. In a footnote."
+      },
+      D: {
+        icon: "🕊️",
+        name: "Dove",
+        tag: "The Employment Defender",
+        one: "You care about unemployment, output losses, and avoiding recessions that exist mainly to prove toughness.",
+        policy: "Patience, support for labor markets, gradual disinflation, and skepticism toward crushing demand just to impress bond markets.",
+        strength: "Macroeconomic empathy. You remember that households are not a residual in the model.",
+        weakness: "You may wait too long and then have to explain why inflation has developed a lease and put its name on the mailbox."
+      },
+      P: {
+        icon: "🐦",
+        name: "Pigeon",
+        tag: "The Prudent Central Banker",
+        one: "You are cautious, incremental, and emotionally committed to the phrase ‘incoming data.’",
+        policy: "Gradualism, data dependence, careful communication, and a deep suspicion of dramatic people with policy proposals.",
+        strength: "Restraint under uncertainty. You know that data are revised and overconfidence is how central banks end up in case studies.",
+        weakness: "By the time you are fully convinced, the economy may already be on fire, underwater, or both."
+      },
+      E: {
+        icon: "🦉",
+        name: "Eagle",
+        tag: "The Visionary Central Banker",
+        one: "You see structural shifts, regime changes, and the humiliating possibility that the inherited framework is not enough.",
+        policy: "Framework reviews, long-horizon analysis, attention to technology, demographics, geopolitics, and regime change.",
+        strength: "Perspective. You notice when the map no longer resembles the territory.",
+        weakness: "You may interpret a bad quarterly forecast as the collapse of the old macroeconomic order."
+      },
+      R: {
+        icon: "🦜",
+        name: "Parrot",
+        tag: "The Holistic Central Banker",
+        one: "You believe monetary policy is connected to inequality, climate, housing, finance, fiscal policy, and legitimacy.",
+        policy: "Cross-domain analysis, broader institutional awareness, stakeholder sensitivity, and a mandate that keeps developing side quests.",
+        strength: "Systems thinking. You understand that monetary policy does not happen in a vacuum, because apparently society exists.",
+        weakness: "Your central bank is now responsible for everything except perhaps airport security, and even that is under review."
+      },
+      C: {
+        icon: "🐦‍⬛",
+        name: "Crow",
+        tag: "The Crisis Innovator",
+        one: "When the standard toolkit fails, you build another one, name it, defend it legally, and call it temporary with a straight face.",
+        policy: "Unconventional tools, emergency liquidity, balance-sheet creativity, swap lines, forward guidance, and acronyms with emotional baggage.",
+        strength: "Adaptability. You can move fast when the institutional furniture is already on fire.",
+        weakness: "No one is completely sure whether you saved the system or taught it to expect rescue."
+      }
+    };
+
+    let current = 0;
+    let answers = Array(quiz.length).fill(null);
+    let finalResult = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function show(screenId) {
+      ["startScreen", "rulesScreen", "quizScreen", "tieScreen", "resultScreen"].forEach(id => $(id).classList.add("hidden"));
+      $(screenId).classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestion() {
+      show("quizScreen");
+      const item = quiz[current];
+      $("questionText").textContent = item.q;
+      $("progressText").textContent = `Question ${current + 1}/${quiz.length}`;
+      $("progressBar").style.width = `${((current) / quiz.length) * 100}%`;
+      $("prevBtn").disabled = current === 0;
+      const box = $("answers");
+      box.innerHTML = "";
+      item.a.forEach((ans, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "answer" + (answers[current] === idx ? " selected" : "");
+        btn.innerHTML = `<span class="letter">${ans.letter}</span>${escapeHtml(ans.text)}`;
+        btn.addEventListener("click", () => {
+          answers[current] = idx;
+          if (current < quiz.length - 1) {
+            current += 1;
+            renderQuestion();
+          } else {
+            $("progressBar").style.width = "100%";
+            finishQuiz();
+          }
+        });
+        box.appendChild(btn);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]));
+    }
+
+    function calculateScores() {
+      const scores = Object.fromEntries(traits.map(t => [t, 0]));
+      const counts = Object.fromEntries(traits.map(t => [t, 0]));
+      answers.forEach((answerIdx, qIdx) => {
+        if (answerIdx === null) return;
+        const pts = quiz[qIdx].a[answerIdx].pts;
+        Object.entries(pts).forEach(([trait, value]) => {
+          scores[trait] += value;
+          counts[trait] += 1;
+        });
+      });
+      return { scores, counts };
+    }
+
+    function sortedTraits(scores) {
+      return traits.slice().sort((a, b) => scores[b] - scores[a]);
+    }
+
+    function isHighestOrSecond(trait, scores) {
+      return sortedTraits(scores).slice(0, 2).includes(trait);
+    }
+
+    function isHighest(trait, scores) {
+      const max = Math.max(...traits.map(t => scores[t]));
+      return scores[trait] === max;
+    }
+
+    function classify(tieChoice = null) {
+      const { scores, counts } = calculateScores();
+      const order = sortedTraits(scores);
+      const highest = scores[order[0]];
+      const second = scores[order[1]];
+
+      if (isHighest("C", scores) && counts.C >= 4) {
+        return { trait: "C", scores, counts, rule: "Crow rule: highest score plus repeated crisis-tool choices." };
+      }
+
+      if (isHighestOrSecond("R", scores) && counts.R >= 4 && scores.R > scores.H && scores.R > scores.D) {
+        return { trait: "R", scores, counts, rule: "Parrot rule: broad-policy choices repeatedly outweighed pure Hawk/Dove instincts." };
+      }
+
+      if (isHighestOrSecond("E", scores) && counts.E >= 4 && scores.E > scores.P) {
+        return { trait: "E", scores, counts, rule: "Eagle rule: structural-change choices repeatedly exceeded prudence." };
+      }
+
+      if (isHighest("P", scores) || (highest - second <= 2 && [order[0], order[1]].includes("P"))) {
+        return { trait: "P", scores, counts, rule: "Pigeon rule: prudence either led outright or stabilized a close result." };
+      }
+
+      if (scores.H - scores.D >= 3) {
+        return { trait: "H", scores, counts, rule: "Hawk/Dove separation: inflation credibility clearly outweighed employment stabilization." };
+      }
+
+      if (scores.D - scores.H >= 3) {
+        return { trait: "D", scores, counts, rule: "Hawk/Dove separation: employment stabilization clearly outweighed inflation toughness." };
+      }
+
+      if (!tieChoice) {
+        return { trait: null, scores, counts, needsTie: true, rule: "Tie-breaker needed: Hawk and Dove are too close." };
+      }
+
+      return {
+        trait: tieChoice,
+        scores,
+        counts,
+        rule: tieChoice === "H"
+          ? "Tie-breaker: you chose credibility over avoidable unemployment. Firm, tidy, alarming."
+          : "Tie-breaker: you chose avoidable unemployment as the greater failure. Soft-hearted, or simply literate in welfare loss."
+      };
+    }
+
+    function finishQuiz() {
+      const result = classify();
+      if (result.needsTie) {
+        show("tieScreen");
+      } else {
+        renderResult(result);
+      }
+    }
+
+    function renderResult(result) {
+      finalResult = result;
+      const profile = profiles[result.trait];
+      $("resultIcon").textContent = profile.icon;
+      $("resultName").textContent = profile.name;
+      $("resultTag").textContent = profile.tag;
+      $("resultOneLine").textContent = profile.one;
+      $("resultPolicy").textContent = profile.policy;
+      $("resultStrength").textContent = profile.strength;
+      $("resultWeakness").textContent = profile.weakness;
+
+      const max = Math.max(...traits.map(t => result.scores[t]), 1);
+      const board = $("scoreboard");
+      board.innerHTML = "";
+
+      const rule = document.createElement("div");
+      rule.className = "result-section";
+      rule.innerHTML = `<h3>Why you got this result</h3><p>${escapeHtml(result.rule)}</p>`;
+      board.appendChild(rule);
+
+      sortedTraits(result.scores).forEach(t => {
+        const row = document.createElement("div");
+        row.className = "score-row";
+        row.innerHTML = `
+          <div><strong>${traitNames[t]}</strong></div>
+          <div class="bar"><div style="width:${(result.scores[t] / max) * 100}%"></div></div>
+          <div>${result.scores[t]}</div>
+        `;
+        board.appendChild(row);
+      });
+
+      $("copyNote").textContent = "";
+      show("resultScreen");
+    }
+
+    function resetQuiz() {
+      current = 0;
+      answers = Array(quiz.length).fill(null);
+      finalResult = null;
+      renderQuestion();
+    }
+
+    function copyResult() {
+      if (!finalResult) return;
+      const p = profiles[finalResult.trait];
+      const text = `I am a ${p.name}: ${p.tag}. ${p.one}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          $("copyNote").textContent = "Result copied. Monetary identity now transferable.";
+        }).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const area = document.createElement("textarea");
+      area.value = text;
+      document.body.appendChild(area);
+      area.select();
+      try {
+        document.execCommand("copy");
+        $("copyNote").textContent = "Result copied. Monetary identity now transferable.";
+      } catch (e) {
+        $("copyNote").textContent = text;
+      }
+      document.body.removeChild(area);
+    }
+
+    $("startBtn").addEventListener("click", resetQuiz);
+    $("rulesStartBtn").addEventListener("click", resetQuiz);
+    $("aboutBtn").addEventListener("click", () => show("rulesScreen"));
+    $("backToStartBtn").addEventListener("click", () => show("startScreen"));
+    $("prevBtn").addEventListener("click", () => {
+      if (current > 0) {
+        current -= 1;
+        renderQuestion();
+      }
+    });
+    $("restartBtn").addEventListener("click", resetQuiz);
+    $("againBtn").addEventListener("click", resetQuiz);
+    $("copyBtn").addEventListener("click", copyResult);
+    $("tieBackBtn").addEventListener("click", () => {
+      current = quiz.length - 1;
+      renderQuestion();
+    });
+    $("tieRestartBtn").addEventListener("click", resetQuiz);
+
+    document.querySelectorAll("[data-tie]").forEach(btn => {
+      btn.addEventListener("click", () => renderResult(classify(btn.getAttribute("data-tie"))));
+    });
+  </script>
+</body>
+</html>
